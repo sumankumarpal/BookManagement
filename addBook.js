@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS books (
 
 async function createBook(pool, title, author, publicationYear) {
   try {
-    // Check if the book already exists
+    // Check if the book already exists in table
     const exists = await checkBookExists(pool, title, author);
     if (exists) {
       console.log('The book already exists.');
