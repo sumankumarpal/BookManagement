@@ -9,6 +9,7 @@ const { buildSchema } = require('graphql');
 const resolvers = require('./resolvers');
 const path = require('path');
 const fs = require('fs');
+const sqlite3 = require('sqlite3');
 
 const createUserTableIfNotExists = require('./createUserTable');
 
@@ -25,7 +26,7 @@ const secretKey = 'your_secret_key';
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'library',
+  database: '',
   password: 'system',
   port: 5432, // Default PostgreSQL port
 });
@@ -36,15 +37,21 @@ app.use(express.json());
 app.use(expressJwt.expressjwt({ 
   secret: secretKey,
   algorithms: ['HS256'] // Specify the algorithms used for decoding and verifying JWT tokens
-}).unless({ path: ['/home', '/api/login', '/api/register', '/login', '/register', '/create-account-success', '/createnewbook'] }));
+}).unless({ path: ['/home', '/api/login', '/api/register', '/login', '/register', '/create-account-success', '/createnewbook', '/graphql'] }));
 createUserTableIfNotExists(pool);
-pool.query('SELECT * from books', (err, res) => {
-  if (err) {
-    console.error('Error executing query:', err);
-  } else {
-    console.log('Successfully connected to PostgreSQL database:', res.rows[0]);
+async function createBookTableIfNotExists(pool){
+const createBookTableQuery = `CREATE TABLE IF NOT EXISTS books (id SERIAL PRIMARY KEY, title TEXT, author TEXT, publication_year INTEGER)`;
+  try {
+    const client = await pool.connect();
+    await client.query(createBookTableQuery);
+    console.log('Table created successfully');
+    client.release();
+  } catch (error) {
+    console.error('Error creating table:', error);
   }
-});
+}
+createBookTableIfNotExists(pool);
+
 
 
 
@@ -203,6 +210,8 @@ app.get('/createnewbook', (req, res) => {
     }
   });
 });
+
+
 
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000/graphql');
