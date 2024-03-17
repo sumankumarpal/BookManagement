@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Form</title>
+  <style>
+    form {
+      margin: 0 auto;
+      width: 300px;
+    }
+    input, select {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Registration</h2>
+  <form id="registerForm">
+    <input type="text" id="userName" placeholder="Username" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="tel" id="phoneNumber" placeholder="Phone Number" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <select id="role" required>
+      <option value="">Select Role</option>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+    <button type="submit">Register</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the form from submitting
+
+      const userName = document.getElementById('userName').value;
+      const email = document.getElementById('email').value;
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+
+      // AJAX call to register user
+      fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user_name: userName, email:email, phone_number: phoneNumber, password:password, role:role })
+      })
+      .then(response => {
+        if (response.status  === 201) {
+          return response.body;
+        } else {
+          return 'Registration failed'+response.body;
+        }
+      })
+      .then(data => {
+        // Handle successful registration (e.g., show success message)
+        document.getElementById('message').textContent = 'Registration successful. You can now login.';
+        window.location.href = '/create-account-success';
+      })
+      .catch(error => {
+        // Display error message
+        document.getElementById('message').textContent = 'Registration failed. Please try again later.';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Book</title>
+  <style>
+    form {
+      margin: 0 auto;
+      width: 300px;
+    }
+    input {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Add New Book</h2>
+  <form id="addBookForm">
+    <input type="text" id="title" placeholder="Title" required>
+    <input type="text" id="author" placeholder="Author" required>
+    <input type="number" id="publicationYear" placeholder="Publication Year" required>
+    <button type="submit">Add Book</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    document.getElementById('addBookForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the form from submitting
+
+      const title = document.getElementById('title').value;
+      const author = document.getElementById('author').value;
+      const publicationYear = document.getElementById('publicationYear').value;
+      const token = localStorage.getItem('jwtToken');
+
+      // AJAX call to add a new book
+      fetch('/api/books/add', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Include JWT token in the 'Authorization' header
+      },
+        body: JSON.stringify({ title: title, author: author, publication_year: publicationYear })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Failed to add book');
+        }
+      })
+      .then(data => {
+        // Handle successful addition of book (e.g., show success message)
+        document.getElementById('message').textContent = 'Book added successfully.';
+      })
+      .catch(error => {
+        // Display error message
+        document.getElementById('message').textContent = 'Failed to add book.Please Login Before Add a Book';
+      });
+    });
+  </script>
+</body>
+</html>
