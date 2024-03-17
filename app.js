@@ -36,7 +36,7 @@ app.use(express.json());
 app.use(expressJwt.expressjwt({ 
   secret: secretKey,
   algorithms: ['HS256'] // Specify the algorithms used for decoding and verifying JWT tokens
-}).unless({ path: ['/home', '/api/login', '/api/register', '/login', '/register', '/create-account-success', '/createnewbook', '/graphql', '/'] }));
+}).unless({ path: ['/home', '/api/login', '/api/register', '/login', '/register', '/create-account-success', '/createnewbook', '/graphql', '/bookmanagement'] }));
 createUserTableIfNotExists(pool);
 async function createBookTableIfNotExists(pool){
 const createBookTableQuery = `CREATE TABLE IF NOT EXISTS books (id SERIAL PRIMARY KEY, title TEXT, author TEXT, publication_year INTEGER)`;
@@ -210,7 +210,7 @@ app.get('/createnewbook', (req, res) => {
   });
 });
 
-app.get('/', (req, res) => {
+app.get('/bookmanagement', (req, res) => {
   const htmlFilePath = path.join("dist", 'index.html');
   
   // Read the HTML file
