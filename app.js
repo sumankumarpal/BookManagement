@@ -9,7 +9,6 @@ const { buildSchema } = require('graphql');
 const resolvers = require('./resolvers');
 const path = require('path');
 const fs = require('fs');
-const sqlite3 = require('sqlite3');
 
 const createUserTableIfNotExists = require('./createUserTable');
 
